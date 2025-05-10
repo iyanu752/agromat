@@ -1,5 +1,5 @@
 import {Leaf} from "lucide-react"
-export default function Footer () {
+export default function FooterSection () {
     return (
 
         <>
@@ -16,7 +16,7 @@ export default function Footer () {
               </p>
             </div>
             <div>
-              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-green-800">Products</h3>
+              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-green-800">Products</h3> 
               <ul className="space-y-2 text-sm">
                 <li>
                   <a href="#" className="text-muted-foreground hover:text-green-600">

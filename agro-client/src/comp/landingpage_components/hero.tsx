@@ -8,7 +8,7 @@ function Hero () {
 
     return (
         <>
-            <section className="relative overflow-hidden p-[32px] bg-gradient-to-b from-green-50 to-white py-16 md:py-24">
+            <section className="relative  overflow-hidden p-[32px] bg-gradient-to-b from-green-50 to-white py-16 md:py-24">
           <div className="container grid gap-8 md:grid-cols-2 md:items-center">
             <div className="relative z-10 space-y-6">
               <div className="inline-block rounded-full bg-green-100 px-4 py-1.5 text-sm font-medium text-green-800">
