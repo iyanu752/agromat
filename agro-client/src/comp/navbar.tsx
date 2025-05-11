@@ -42,7 +42,7 @@ function Navbar() {
         <div className="flex items-center gap-4">
         <nav className="hidden lg:flex lg:items-center lg:gap-4">
           <a href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground">Home</a>
-          <a href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground">Products</a>
+          <a href="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground">Products</a>
           <a href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground">Invest</a>
           <a href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground">About</a>
           <a href="/login" className="text-sm font-medium text-muted-foreground hover:text-foreground">Log in</a>

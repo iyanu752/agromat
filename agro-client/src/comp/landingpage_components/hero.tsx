@@ -26,7 +26,7 @@ function Hero () {
                   Start Investing
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-                <Button variant="outline">Explore Products</Button>
+                <a href="/products"><Button variant="outline">Explore Products</Button></a>
               </div>
             </div>
             <div className="relative md:block">
