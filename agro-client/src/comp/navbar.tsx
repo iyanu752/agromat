@@ -1,19 +1,36 @@
-import { Menu, X, Search, ShoppingCart, Leaf } from 'lucide-react';
+import { Menu, X, Search, Leaf } from 'lucide-react';
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import CartPreview from './cart_components/cartcomp';
 function Navbar() {
   const [mobileMenu, setMobileMenu] = useState(false);
+  const [loggedIn, setLoggedIN] = useState(false);
 
   const toggleMobileMenu = () => {
     setMobileMenu(!mobileMenu)
   };
-
   useEffect(() => {
     document.body.style.overflow = mobileMenu ? 'hidden' : 'auto';
   }, [mobileMenu]);
+
+  useEffect(() => {
+    checkLogStatus()
+  }, [])
+
+const checkLogStatus = () => {
+  try {
+    const userString = localStorage.getItem("user");
+    const user = userString ? JSON.parse(userString) : null;
+    setLoggedIN(user?.userLoggedIn === true);
+  } catch (e) {
+    console.error("Error parsing user from localStorage", e);
+    setLoggedIN(false);
+  }
+};
+
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -41,17 +58,21 @@ function Navbar() {
 
         <div className="flex items-center gap-4">
         <nav className="hidden lg:flex lg:items-center lg:gap-4">
-          <a href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground">Home</a>
+          <a href="/" className="text-sm font-medium text-muted-foreground hover:text-foreground">Home</a>
           <a href="/products" className="text-sm font-medium text-muted-foreground hover:text-foreground">Products</a>
           <a href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground">Invest</a>
           <a href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground">About</a>
-          <a href="/login" className="text-sm font-medium text-muted-foreground hover:text-foreground">Log in</a>
-          <Button asChild variant="default" className="bg-green-600 hover:bg-green-700">
+          <a href="/login" className={` ${loggedIn ? 'hidden' : 'flex'} text-sm font-medium text-muted-foreground hover:text-foreground`}>Log in</a>
+          <Button asChild variant="default" className={ `${loggedIn ? 'hidden' : 'flex' } bg-green-600 hover:bg-green-700`}>
             <a href="/signup">Sign up</a>
           </Button>
+          <Avatar className={`${loggedIn ? 'flex' : 'hidden'}`}>
+            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
         </nav>
           <Button variant="outline" size="icon" className="relative">
-            <ShoppingCart className="h-5 w-5" />
+            <CartPreview/>
             <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-green-600 text-xs text-white">
               0
             </span>
@@ -78,14 +99,26 @@ function Navbar() {
       </div>
 
       <nav className="flex flex-col gap-6 bg-white p-[32px] mt-10 text-center">
-        <a href="#" className="text-lg font-medium text-muted-foreground hover:text-foreground" onClick={toggleMobileMenu}>Home</a>
+                {loggedIn && (
+          <div className="flex justify-center">
+            <Avatar className='w-[50px] h-[50px]'>
+              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+          </div>
+        )}
+        <a href="/" className="text-lg font-medium text-muted-foreground hover:text-foreground" onClick={toggleMobileMenu}>Home</a>
         <a href="#" className="text-lg font-medium text-muted-foreground hover:text-foreground" onClick={toggleMobileMenu}>Products</a>
         <a href="#" className="text-lg font-medium text-muted-foreground hover:text-foreground" onClick={toggleMobileMenu}>Invest</a>
         <a href="#" className="text-lg font-medium text-muted-foreground hover:text-foreground" onClick={toggleMobileMenu}>About</a>
-        <a href="/login" className="text-lg font-medium text-muted-foreground hover:text-foreground" onClick={toggleMobileMenu}>Log in</a>
-        <Button asChild variant="default" className="bg-green-600 hover:bg-green-700">
-          <a href="/signup" onClick={toggleMobileMenu}>Sign up</a>
-        </Button>
+        {!loggedIn && (
+          <>
+            <a href="/login" className="text-lg font-medium text-muted-foreground hover:text-foreground" onClick={toggleMobileMenu}>Log in</a>
+            <Button asChild variant="default" className="bg-green-600 hover:bg-green-700">
+              <a href="/signup" onClick={toggleMobileMenu}>Sign up</a>
+            </Button>
+          </>
+        )}
       </nav>
     </motion.div>
   )}

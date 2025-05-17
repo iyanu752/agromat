@@ -27,12 +27,15 @@ const loginUser = async (email: string , password: string) => {
         const response = await axios.post(API_ENDPOINTS.LOGIN, {email, password});
 
         const {message, user, userId, token} = response.data;
-        if (message === "Login successful"){
+        console.log('response data', response)
+        if (response.status){
             localStorage.setItem("userId", userId);
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(user));
+            console.log('message success: ', message)
             return {success: true, message};
         }else {
+            console.log('message failed', message)
             return {success: false, message};
         }
     }catch (error) {

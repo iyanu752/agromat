@@ -36,15 +36,19 @@ export default function LoginForm() {
       const response = await loginUser(data.email, data.password);
       
       if (!response) {
+        console.log('response', response)
         toast.error("Something went wrong. Please try again.");
         return;
       }
   
       if (response.success) {
+        console.log('response 2', response)
         toast.success(response.message);
+        console.log('success message: ', response.message)
         navigate("/products"); 
       } else {
         toast.error(response.message);
+        console.log('error message', response.message)
       }
     } catch (error) {
       console.error(error);

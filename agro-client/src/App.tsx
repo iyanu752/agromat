@@ -6,7 +6,10 @@ import Products from './pages/products';
 import Signup from './pages/signUp';
 import Login from './pages/login';
 import { useState, useEffect } from 'react';
+// import { ToastContainer } from "react-toastify";
 import FooterSection from './comp/footer';
+import { Toaster} from 'sonner'
+import CartPage from './pages/cart';
 // import PropTypes from 'prop-types';
 
 
@@ -36,7 +39,8 @@ function App() {
     {path: "/" , element: <AppLayout><LandingPage/></AppLayout>},
     {path: "/products", element:<AppLayout><Products/></AppLayout>},
     { path: "/signup", element: <div><Signup /></div> },
-    {path: "/login", element: <div><Login/></div>}
+    {path: "/login", element: <div><Login/></div>},
+    {path: "/cart", element: <div><CartPage/></div>}
   ])
 
   return (
@@ -44,6 +48,11 @@ function App() {
     {/* <Navbar/>
     <LandingPage/>
     <Footer/> */}
+    <Toaster 
+     position="top-right"
+     expand={true}
+     richColors 
+     />
     <RouterProvider router={router} />
     </>
   )
