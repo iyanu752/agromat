@@ -165,7 +165,7 @@ export default function AdminDashboardPage() {
           </TabsContent>
 
           <TabsContent value="analytics">
-            <AdminAnalytics />
+            {/* <AdminAnalytics /> */}
           </TabsContent>
 
           <TabsContent value="settings">
