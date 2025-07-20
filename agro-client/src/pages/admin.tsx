@@ -5,7 +5,7 @@ import { Users, ShoppingBag, BarChart3, Settings, AlertTriangle, CheckCircle, Cl
 import Navbar from "@/comp/navbar"
 import AdminUserManagement from "@/comp/admin_components/admin-user-managment"
 import AdminProductApproval from "@/comp/admin_components/admin-product-approval"
-import AdminAnalytics from "@/comp/admin_components/admin-analytics"
+// import AdminAnalytics from "@/comp/admin_components/admin-analytics"
 // import AdminSettings from "@/comp/admin_components/admin-settings"
 
 export const metadata = {
