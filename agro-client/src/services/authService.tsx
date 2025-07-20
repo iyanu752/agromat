@@ -2,9 +2,9 @@ import axios from '@/config/axios'
 import API_ENDPOINTS from '@/config/endpoints'
 
 
-const signupUser = async (name: string, email: string, password: string) => {
+const signupUser = async (name: string, email: string, password: string, userType: string) => {
     try {
-        const response = await axios.post(API_ENDPOINTS.SIGNUP, {name, email, password});
+        const response = await axios.post(API_ENDPOINTS.SIGNUP, {name, email, password, userType});
         if (response.data && response.data.userId) {
             return {success: true, message: "Sign Up Successful"};
         } else {
@@ -33,7 +33,7 @@ const loginUser = async (email: string , password: string) => {
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(user));
             console.log('message success: ', message)
-            return {success: true, message};
+            return {success: true, message, response};
         }else {
             console.log('message failed', message)
             return {success: false, message};

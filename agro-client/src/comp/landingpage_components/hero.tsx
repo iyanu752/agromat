@@ -4,8 +4,61 @@ import LandingAnimation from "./landingAnimation"
 import FeatureCard from "./featureCard"
 import ProductCard from "./productCard"
 import NewsletterForm from "./newsletterForm"
-function Hero () {
+import { getAllProducts } from "@/services/productService"
+import { addToCart } from "@/services/cartService" 
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
 
+interface Product {
+  _id: string
+  name: string
+  price: number
+  image: string[]
+  unit: string
+  category: string
+}
+
+function Hero () {
+  const [products, setProducts] = useState<Product[]>([])
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await getAllProducts()
+        setProducts(res)
+      } catch (error) {
+        console.error("Failed to fetch products", error)
+      }
+    }
+
+    fetchProducts()
+  }, [])
+
+const handleAddToCart = async (productId: string) => {
+  console.log("handleAddToCart triggered for:", productId); 
+
+  const userId = localStorage.getItem("userId");
+  if (!userId) {
+    toast.error("You must be logged in to add items to your cart.");
+    return;
+  }
+
+  const payload = { userId, productId, quantity: 1 };
+
+  try {
+    const result = await addToCart(payload);
+    if (result.success) {
+      toast.success(result.message || "Added to cart successfully!");
+    } else {
+      toast.error(result.message || "Failed to add to cart.");
+    }
+  } catch (error) {
+    toast.error("Something went wrong while adding to cart.");
+    console.error(error);
+  }
+};
+
+  
     return (
         <>
             <section className="relative  overflow-hidden p-[32px] bg-gradient-to-b from-green-50 to-white py-16 md:py-24">
@@ -96,32 +149,25 @@ function Hero () {
                 <ChevronRight className="ml-1 h-4 w-4" />
               </a>
             </div>
-            <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              <ProductCard
-                name="Heirloom Tomato"
-                price={5.99}
-                location="San Juan Capistrano, CA"
-                imageUrl="/placeholder.svg?height=400&width=400"
-              />
-              <ProductCard
-                name="Organic Spinach"
-                price={3.49}
-                location="Salinas Valley, CA"
-                imageUrl="/placeholder.svg?height=400&width=400"
-              />
-              <ProductCard
-                name="Fresh Strawberries"
-                price={6.99}
-                location="Watsonville, CA"
-                imageUrl="/placeholder.svg?height=400&width=400"
-              />
-              <ProductCard
-                name="Bell Peppers"
-                price={4.29}
-                location="Oxnard, CA"
-                imageUrl="/placeholder.svg?height=400&width=400"
-              />
-            </div>
+              <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                {[...products]
+                  .sort(() => Math.random() - 0.5)
+                  .slice(0, 4)
+                  .map((product) => (
+                   <ProductCard
+                    key={product._id}
+                    name={product.name}
+                    price={product.price}
+                    location={product.category}
+                    imageUrl={
+                      product.image && product.image.length > 0
+                        ? product.image[0]
+                        : "/placeholder.svg?height=400&width=400"
+                    }
+                    onAddToCart={() => handleAddToCart(product._id)}
+                  />
+                ))}
+              </div>
           </div>
         </section>
 

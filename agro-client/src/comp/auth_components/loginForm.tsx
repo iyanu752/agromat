@@ -41,11 +41,14 @@ export default function LoginForm() {
         return;
       }
   
-      if (response.success) {
-        console.log('response 2', response)
+      if (response.success && response.response?.data.user.userType === "user") {
         toast.success(response.message);
         console.log('success message: ', response.message)
         navigate("/products"); 
+      }else if (response.success && response.response?.data.user.userType === "seller") {
+        toast.success(response.message);
+        console.log('success message: ', response.message)
+        navigate("/seller"); 
       } else {
         toast.error(response.message);
         console.log('error message', response.message)

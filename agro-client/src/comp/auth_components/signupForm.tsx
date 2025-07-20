@@ -9,11 +9,13 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useNavigate } from "react-router-dom";
 import { signupUser } from "@/services/authService";
 import { toast } from "sonner";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
 type SignupFormValues = {
   name: string;
   email: string;
   password: string;
+  userType: string;
   confirmPassword: string;
   acceptTerms: boolean;
 };
@@ -23,6 +25,7 @@ export default function SignupForm() {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<SignupFormValues>({
     defaultValues: {
@@ -30,6 +33,7 @@ export default function SignupForm() {
       email: "",
       password: "",
       confirmPassword: "",
+      userType: "",
       acceptTerms: false,
     },
   });
@@ -39,7 +43,7 @@ export default function SignupForm() {
 
   const onSubmit = async (data: SignupFormValues) => {
     setIsLoading(true);
-    const response = await signupUser(data.name, data.email, data.password);
+    const response = await signupUser(data.name, data.email, data.password, data.userType);
     setIsLoading(false);
     if (response.success) {
       toast.success(response.message);
@@ -124,6 +128,37 @@ export default function SignupForm() {
         {errors.confirmPassword && (
           <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
         )}
+      </div>
+
+            <div>
+        <Label className="block text-sm font-medium leading-6 text-gray-900">I want to join as a</Label>
+        <div className="mt-2">
+          <RadioGroup
+            defaultValue="buyer"
+            onValueChange={(value) => setValue("userType", value as "buyer" | "seller" | "admin")}
+            className="flex flex-col space-y-1"
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="user" id="user" />
+              <Label htmlFor="buyer" className="cursor-pointer">
+                Buyer - I want to purchase products
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="seller" id="seller" />
+              <Label htmlFor="seller" className="cursor-pointer">
+                Seller - I want to sell agricultural products
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="admin" id="admin" />
+              <Label htmlFor="admin" className="cursor-pointer">
+                Admin - I need to manage the platform
+              </Label>
+            </div>
+          </RadioGroup>
+          {errors.userType && <p className="mt-1 text-sm text-red-500">{errors.userType.message}</p>}
+        </div>
       </div>
 
       <div className="flex items-center">

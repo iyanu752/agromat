@@ -1,53 +1,80 @@
-// import type { Metadata } from "next"
-// import Link from "next/link"
-// import Image from "next/image"
+"use client"
+
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { ArrowLeft, Trash2, Plus, Minus, CreditCard, Truck, ShieldCheck } from "lucide-react"
-// import Header from "@/components/header"
 import Navbar from "@/comp/navbar"
+import { fetchCart, updateCartItem, removeCartItem, clearCart } from "@/services/cartService"
+import { toast } from "sonner"
 
-export const metadata = {
-  title: "Shopping Cart | AgroMat",
-  description: "View and manage your shopping cart",
+interface Product {
+  _id: string
+  name: string
+  price: number
+  image: string[]
+  unit: string
+  category: string
 }
 
-// Mock cart data
-const cartItems = [
-  {
-    id: 1,
-    name: "Heirloom Tomato",
-    price: 5.99,
-    quantity: 2,
-    image: "/placeholder.svg?height=400&width=400",
-  },
-  {
-    id: 2,
-    name: "Organic Spinach",
-    price: 3.49,
-    quantity: 1,
-    image: "/placeholder.svg?height=400&width=400",
-  },
-  {
-    id: 3,
-    name: "Fresh Strawberries",
-    price: 6.99,
-    quantity: 3,
-    image: "/placeholder.svg?height=400&width=400",
-  },
-]
+interface CartItem {
+  productId: Product | null
+  quantity: number
+}
 
 export default function CartPage() {
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const tax = subtotal * 0.08 // 8% tax
+  const [cartItems, setCartItems] = useState<CartItem[]>([])
+  const [userId, setUserId] = useState<string | null>(null)
+
+  const loadCart = async (uid: string) => {
+    try {
+      const data = await fetchCart(uid)
+      setCartItems(data.items || [])
+    } catch (err) {
+      console.error("Failed to load cart:", err)
+    }
+  }
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user")
+    if (storedUser) {
+      const parsed = JSON.parse(storedUser)
+      setUserId(parsed._id)
+      loadCart(parsed._id)
+    }
+  }, [])
+
+  const handleQuantityChange = async (productId: string, newQty: number) => {
+    if (!userId || newQty < 1) return
+    await updateCartItem(userId, productId, newQty)
+    loadCart(userId)
+  }
+
+  const handleRemove = async (productId: string) => {
+    if (!userId) return
+    await removeCartItem(userId, productId)
+    loadCart(userId)
+  }
+
+  const handleClearCart = async () => {
+    if (!userId) return
+    await clearCart(userId)
+    toast.success("Cart cleared successfully")
+    loadCart(userId)
+  }
+
+  const subtotal = cartItems.reduce(
+    (sum, item) => (item.productId ? sum + item.productId.price * item.quantity : sum),
+    0
+  )
+  const tax = subtotal * 0.08
   const shipping = subtotal > 50 ? 0 : 5.99
   const total = subtotal + tax + shipping
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar/>
-
+      <Navbar />
       <main className="container px-[32px] py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
@@ -62,7 +89,12 @@ export default function CartPage() {
                   <h2 className="text-lg font-medium">
                     Cart Items ({cartItems.reduce((sum, item) => sum + item.quantity, 0)})
                   </h2>
-                  <Button variant="ghost" size="sm" className="text-red-500 hover:bg-red-50 hover:text-red-600">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-500 hover:bg-red-50 hover:text-red-600"
+                    onClick={handleClearCart}
+                  >
                     <Trash2 className="mr-2 h-4 w-4" />
                     Clear Cart
                   </Button>
@@ -71,42 +103,62 @@ export default function CartPage() {
                 <Separator className="my-4" />
 
                 <div className="space-y-6">
-                  {cartItems.map((item) => (
-                    <div key={item.id} className="flex gap-4">
-                      <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border">
-                        <img
-                          src={item.image || "/placeholder.svg"}
-                          alt={item.name}
-                          width={96}
-                          height={96}
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
-                      <div className="flex flex-1 flex-col">
-                        <div className="flex justify-between">
-                          <h3 className="text-base font-medium text-gray-900">{item.name}</h3>
-                          <p className="text-base font-medium text-gray-900">
-                            ${(item.price * item.quantity).toFixed(2)}
-                          </p>
-                        </div>
-                        <p className="mt-1 text-sm text-gray-500">${item.price.toFixed(2)} / each</p>
-                        <div className="mt-auto flex items-center justify-between">
-                          <div className="flex items-center border rounded-md">
-                            <button className="flex h-8 w-8 items-center justify-center text-gray-600 hover:bg-gray-100">
-                              <Minus className="h-3 w-3" />
-                              <span className="sr-only">Decrease quantity</span>
-                            </button>
-                            <span className="flex h-8 w-10 items-center justify-center text-sm">{item.quantity}</span>
-                            <button className="flex h-8 w-8 items-center justify-center text-gray-600 hover:bg-gray-100">
-                              <Plus className="h-3 w-3" />
-                              <span className="sr-only">Increase quantity</span>
-                            </button>
+                  {cartItems.length === 0 ? (
+                    <p className="text-gray-500 text-sm text-center py-8">Your cart is empty</p>
+                  ) : (
+                    cartItems.map((item, index) => {
+                      const product = item.productId
+                      if (!product) return null
+
+                      return (
+                        <div key={product._id + index} className="flex gap-4">
+                          <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border">
+                            <img
+                              src={product.image?.[0] || "/placeholder.svg"}
+                              alt={product.name}
+                              width={96}
+                              height={96}
+                              className="h-full w-full object-cover"
+                            />
                           </div>
-                          <button className="text-sm font-medium text-red-600 hover:text-red-500">Remove</button>
+                          <div className="flex flex-1 flex-col">
+                            <div className="flex justify-between">
+                              <h3 className="text-base font-medium text-gray-900">{product.name}</h3>
+                              <p className="text-base font-medium text-gray-900">
+                                ${(product.price * item.quantity).toFixed(2)}
+                              </p>
+                            </div>
+                            <p className="mt-1 text-sm text-gray-500">${product.price.toFixed(2)} / each</p>
+                            <div className="mt-auto flex items-center justify-between">
+                              <div className="flex items-center border rounded-md">
+                                <button
+                                  className="flex h-8 w-8 items-center justify-center text-gray-600 hover:bg-gray-100"
+                                  onClick={() => handleQuantityChange(product._id, item.quantity - 1)}
+                                >
+                                  <Minus className="h-3 w-3" />
+                                </button>
+                                <span className="flex h-8 w-10 items-center justify-center text-sm">
+                                  {item.quantity}
+                                </span>
+                                <button
+                                  className="flex h-8 w-8 items-center justify-center text-gray-600 hover:bg-gray-100"
+                                  onClick={() => handleQuantityChange(product._id, item.quantity + 1)}
+                                >
+                                  <Plus className="h-3 w-3" />
+                                </button>
+                              </div>
+                              <button
+                                className="text-sm font-medium text-red-600 hover:text-red-500"
+                                onClick={() => handleRemove(product._id)}
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  ))}
+                      )
+                    })
+                  )}
                 </div>
               </div>
             </div>

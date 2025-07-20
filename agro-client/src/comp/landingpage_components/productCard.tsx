@@ -7,9 +7,10 @@ interface ProductCardProps {
   price: number
   location: string
   imageUrl: string
+  onAddToCart: () => void
 }
 
-export default function ProductCard({ name, price, location, imageUrl }: ProductCardProps) {
+export default function ProductCard({ name, price, location, imageUrl, onAddToCart }: ProductCardProps) {
   return (
     <div className="group relative overflow-hidden rounded-lg border bg-white transition-all hover:shadow-md">
       <a href="#" className="block overflow-hidden">
@@ -30,10 +31,20 @@ export default function ProductCard({ name, price, location, imageUrl }: Product
         </div>
         <p className="text-xs text-muted-foreground">Grown in {location}</p>
         <div className="mt-4 flex items-center justify-between">
-          <Button variant="outline" size="sm" className="w-full text-green-600 hover:bg-green-50 hover:text-green-700">
-            <ShoppingCart className="mr-2 h-4 w-4" />
-            Add to cart
-          </Button>
+<Button
+  variant="outline"
+  size="sm"
+  className="w-full text-green-600 hover:bg-green-50 hover:text-green-700"
+  onClick={() => {
+    console.log("Button clicked"); // 👀 Should log
+    onAddToCart(); // ➡️ Triggers Hero's function
+  }}
+>
+  <ShoppingCart className="mr-2 h-4 w-4" />
+  Add to cart
+</Button>
+
+
         </div>
       </div>
     </div>
