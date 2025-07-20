@@ -142,6 +142,7 @@ export default function ProductUploadModal({
       const response = await getProductsBySellerId(sellerId)
       if (response) {
         setProducts(response)
+        console.log(products)
       }
     }catch (error) {
       console.error ('Error fetching products', error)

@@ -81,6 +81,7 @@ export default function CheckoutPage() {
           phone: parsedUser.phone || "",
           email: parsedUser.email || "",
         });
+        console.log(user)
       } catch (err) {
         console.error("Failed to parse user:", err);
       }
@@ -124,6 +125,7 @@ export default function CheckoutPage() {
         (async () => {
           try {
             setIsProcessing(true);
+            console.log(isProcessing)
 
             const orderPayload = {
               userId: userId!,
