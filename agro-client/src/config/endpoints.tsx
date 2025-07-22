@@ -1,4 +1,4 @@
-const BASE_URL = "https://agromat-server.onrender.com"
+const BASE_URL =  import.meta.env.VITE_VITE_BASE_URL
 
 const API_ENDPOINTS = {
     SIGNUP: `${BASE_URL}/auth/signup`,

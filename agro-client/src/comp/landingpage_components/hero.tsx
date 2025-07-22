@@ -150,11 +150,12 @@ const handleAddToCart = async (productId: string) => {
               </a>
             </div>
               <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {[...products]
-                  .sort(() => Math.random() - 0.5)
-                  .slice(0, 4)
-                  .map((product) => (
-                   <ProductCard
+              {Array.isArray(products) &&
+              [...products]
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 4)
+                .map((product) => (
+                  <ProductCard
                     key={product._id}
                     name={product.name}
                     price={product.price}
@@ -167,6 +168,7 @@ const handleAddToCart = async (productId: string) => {
                     onAddToCart={() => handleAddToCart(product._id)}
                   />
                 ))}
+
               </div>
           </div>
         </section>
