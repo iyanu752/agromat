@@ -1,4 +1,4 @@
-const BASE_URL = "https://agromat-server.onrender.com"
+const BASE_URL = "https://agromat-server.onrender.com/api"
 
 const API_ENDPOINTS = {
     SIGNUP: `${BASE_URL}/auth/signup`,
